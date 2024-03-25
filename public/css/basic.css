@@ -1,0 +1,54 @@
+body{
+    background-color: rgb(198, 255, 186);
+}
+h2{
+    margin: 0 0 15px 0;
+}
+
+form{
+    margin: 0 auto;
+    width: 250px;
+    text-align: center;
+    background-color: rgb(147, 255, 126);
+    padding: 25px;
+    border-style:solid;
+    border-radius: 5px;
+    border-color: white;
+    color: blueviolet;
+}
+form label{
+    text-align: right;
+    float: left;
+    font-size: 13pt;
+    color: blueviolet;
+}
+form input{
+    width: inherit;
+    text-align: left;
+    box-sizing: border-box;
+    margin-bottom: 15px;
+    padding: 7px;
+    background-color: inherit;
+    border-radius: 4px;
+    border-color: white;
+    outline-color: white;
+}
+#form-button{
+    width: 50%;
+    text-align: center;
+    padding: 5px;
+    margin-top: 5px;
+    background-color: inherit;
+    border-color: rgb(0, 187, 9);
+    border-radius: 4px;
+    font-size: 11pt;
+    color: blueviolet;
+}
+#form-button:hover,
+#form-button:active{
+    color: white;
+    background-color: rgb(0, 187, 9);
+}
+p{
+    margin: 20px 0 0 0 ;
+}
