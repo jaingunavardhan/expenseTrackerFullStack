@@ -10,9 +10,9 @@ function loginClicked(event)
         password: event.target.password.value
     }
     console.log("loginUser...", loginUser);
-    axios.post('http://localhost:4000/login', loginUser)
+    axios.post('http://localhost:4000/users/login', loginUser)
         .then(loggedUser=>{
-            console.log("AXIOS done...", loggedUser.data);
+            console.log("AXIOS done...", typeof loggedUser, loggedUser);
             loginDiv.lastElementChild.innerHTML = loggedUser.data.toString();
         })
         .catch(error=>{

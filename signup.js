@@ -11,7 +11,7 @@ function signupClicked(event)
         password: event.target.password.value
     }
     console.log("newUser...", newUser);
-    axios.post('http://localhost:4000/signup', newUser)
+    axios.post('http://localhost:4000/users/signup', newUser)
         .then(createdUser=>{
             console.log("AXIOS done...", createdUser.data);
             signupDiv.lastElementChild.innerHTML = createdUser.data.toString();

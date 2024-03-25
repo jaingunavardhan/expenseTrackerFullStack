@@ -2,11 +2,16 @@ body{
     background-color: rgb(198, 255, 186);
 }
 h2{
-    margin: 0 0 15px 0;
+    margin: 0 0 15px 25px;
+    color: red;
 }
 
+form h2{
+    margin: 0 0 15px 0;
+    color: blueviolet;
+}
 form{
-    margin: 0 auto;
+    margin: 0 auto 25px auto;
     width: 250px;
     text-align: center;
     background-color: rgb(147, 255, 126);
@@ -22,7 +27,7 @@ form label{
     font-size: 13pt;
     color: blueviolet;
 }
-form input{
+form input, select{
     width: inherit;
     text-align: left;
     box-sizing: border-box;
@@ -32,6 +37,7 @@ form input{
     border-radius: 4px;
     border-color: white;
     outline-color: white;
+    color: rgb(202, 0, 111);
 }
 #form-button{
     width: 50%;
@@ -52,4 +58,33 @@ form input{
 p{
     margin: 20px 0 0 0 ;
     text-align: center;
+}
+
+li{
+    color: maroon;
+    width: 400px;
+    display:flex;
+    justify-content: space-between;
+}
+li h3{
+    margin: 0;
+}
+li p{
+    text-align: left;
+    margin: 0;
+}
+li div{
+    display: inline-block;
+    vertical-align: center;
+}
+li button{
+    background-color: inherit;
+    border-color: rgb(0, 187, 9);
+    border-radius: 4px;
+}
+
+#delete-btn :hover,
+#delete-btn :active{
+    color: white;
+    background-color: rgb(0, 187, 9);
 }
