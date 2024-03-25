@@ -3,25 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sign Up</title>
+    <title>Login</title>
     <link rel="stylesheet" href="signin.css">
 </head>
 <body>
-    <div id="signup-div" class="centered">
-        <form onsubmit="signupClicked(event)" id="signup-form">
-            <h2>Sign Up</h2>
-            <label for="username">Username :</label> <br>
-                <input type="text" name="username" id="username" placeholder="Enter Username" required><br>
+    <div id="login-div" class="centered">
+        <form onsubmit="loginClicked(event)" id="login-form">
+            <h2>Login</h2>
             <label for="email">Email ID :</label><br>
                 <input type="email" name="email" id="email" placeholder="Enter Email ID" required><br>
             <label for="password">Password :</label><br>
                 <input type="password" name="password" id="password" placeholder="Enter Password" required><br>
-            <button type="submit" id="form-button">Sign Up</button>
-            <p>Existing user? <a href="">Login Here</a></p>
+            <button type="submit" id="form-button">Login</button>
+            <p>New user? <a href="">Signup Here</a></p>
         </form>
         <p style="color: red;"></p>
     </div>
 </body>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.5.1/axios.min.js"></script>
-<script src="signup.js"></script>
+<script src="login.js"></script>
 </html>
