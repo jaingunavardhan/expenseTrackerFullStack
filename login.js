@@ -15,5 +15,8 @@ function loginClicked(event)
             console.log("AXIOS done...", loggedUser.data);
             loginDiv.lastElementChild.innerHTML = loggedUser.data.toString();
         })
-        .catch(error=>console.log(error));
+        .catch(error=>{
+            console.log("Error page...", error.response);
+            loginDiv.lastElementChild.innerHTML = error.response.data.toString();
+        })
 }

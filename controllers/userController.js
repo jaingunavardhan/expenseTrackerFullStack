@@ -50,12 +50,12 @@ exports.postLogin = (request, response, next)=>{
                     if(existingUsers[i].password == request.body.password)
                         return response.json("Logged In successfully...");
                     else
-                        return response.json("Invalid Credentials...");
+                        return response.status(401).json("Invalid Credentials...");
                 }
             }
             if(isEmail == false)
             {
-                return response.json("Email/User doesn't exist...");
+                return response.status(404).json("Email/User doesn't exist...");
             }
         })
         .catch(error=>console.log(error));
