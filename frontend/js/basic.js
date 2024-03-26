@@ -99,7 +99,7 @@ function showLeader(leader)
     const ulList = document.getElementById('leaderboard-list');
 
     const listItem = document.createElement('li');
-    listItem.innerHTML = ` <h3>${leader.username} - Total Expenses: ${leader.amount} </h3>`;
+    listItem.innerHTML = ` <h3>${leader.username} - Total Expenses: ${leader.total_expenses} </h3>`;
 
     ulList.appendChild(listItem);    
 }
