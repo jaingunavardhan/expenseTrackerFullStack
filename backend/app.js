@@ -26,7 +26,7 @@ User.hasMany(Expense);
 Order.belongsTo(User, {constraints:true, onDelete:'CASCADE'});
 User.hasMany(Order);
 
-sequelize.sync()
+sequelize.sync({force:true})
     .then(()=>{
         app.listen(4000);
     })

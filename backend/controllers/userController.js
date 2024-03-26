@@ -1,4 +1,3 @@
-const sequelize = require('../util/database.js');
 const User = require('../models/user.js');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
@@ -38,9 +37,12 @@ exports.postUser = (request, response, next)=>{
         .catch(error=>console.log(error));
 }
 
-function generateToken(id)
+function generateToken(user)
 {
-    return jwt.sign(id, "CandyCaramelo");
+    return jwt.sign(
+        JSON.stringify({id: user.id, username:user.username, ispremiumuser:user.ispremiumuser}),
+        "CandyCaramelo"
+    );
 }
 
 exports.postLogin = (request, response, next)=>{
@@ -53,7 +55,7 @@ exports.postLogin = (request, response, next)=>{
                 const id = existingUsers[0].id;
                 bcrypt.compare(request.body.password, existingUsers[0].password, (error, result)=>{
                     if(result)
-                        return response.json({token: generateToken(id), ispremiumuser: existingUsers[0].ispremiumuser});
+                        return response.json({token: generateToken(existingUsers[0])});
                     else
                         return response.status(401).json("Invalid Credentials...");
                 })                        

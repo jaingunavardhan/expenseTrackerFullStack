@@ -1,6 +1,5 @@
 const Razorpay = require('razorpay');
-const Order = require('../models/order');
-const { response } = require('express');
+const jwt = require('jsonwebtoken');
 
 exports.purchaseMembership = (request, response, next)=>{
     console.log("In purchaseMembership...");
@@ -21,6 +20,14 @@ exports.purchaseMembership = (request, response, next)=>{
     })
 }
 
+function generateToken(user)
+{
+    return jwt.sign(
+        JSON.stringify({id: user.id, username:user.username, ispremiumuser:user.ispremiumuser}),
+        "CandyCaramelo"
+    );
+}
+
 exports.updateTransactionStatus = (request, response, next)=>{
     console.log("Status updated...", request.body);
     
@@ -30,7 +37,7 @@ exports.updateTransactionStatus = (request, response, next)=>{
         request.user.save()
             .then((updatedUser)=>{
                 console.log("user updated...", updatedUser);
-                return response.json({ispremiumuser:request.user.ispremiumuser})
+                return response.json({token: generateToken(updatedUser)});
             })
             .catch(error=>console.log(error));
     }

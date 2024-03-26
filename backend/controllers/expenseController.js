@@ -6,7 +6,6 @@ exports.getExpenses = (request, response, next)=>{
     //Expense.findAll({where:{userId:request.user.id}}) //You can also fetch like this
     request.user.getExpenses()
         .then(existingExpenses=>{
-            console.log("existingExpenses...", existingExpenses);
             return response.json(existingExpenses);
         })
         .catch(error=>console.log(error));

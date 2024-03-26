@@ -2,7 +2,6 @@ function signupClicked(event)
 {
     event.preventDefault();
     const signupDiv = document.getElementById('signup-div');
-    console.log(signupDiv.lastChild)
     signupDiv.lastElementChild.innerHTML = '';
 
     const newUser = {
@@ -38,10 +37,9 @@ function loginClicked(event)
     }
     console.log("loginUser...", loginUser);
     axios.post('http://localhost:4000/users/login', loginUser)
-        .then(loggedUser=>{
-            console.log("AXIOS done...", loggedUser);
-            localStorage.setItem('token', loggedUser.data.token);
-            localStorage.setItem('ispremiumuser', loggedUser.data.ispremiumuser);
+        .then(tokenData=>{
+            console.log("AXIOS done...", tokenData);
+            localStorage.setItem('token', tokenData.data.token);
             window.location.href = "expenses.html";
         })
         .catch(error=>{
@@ -51,12 +49,26 @@ function loginClicked(event)
 }
 
 
+function decodeJWT(token)
+{
+    if(!token)
+    {
+        alert("Please Login to fetch data..")
+        window.location.href = 'login.html';
+    }
+    const base64Url = token.split('.')[1];
+    const user = window.atob(base64Url);
+    //console.log(window.btoa(user)); //Used to encode
+    return JSON.parse(user);
+}
+
 
 function checkPremiumUser()
 {
-    console.log("button loaded...", typeof localStorage.getItem('ispremiumuser'));
-    if(localStorage.getItem('ispremiumuser') == 'true')
+    const user = decodeJWT(localStorage.getItem('token'));
+    if(user.ispremiumuser == true)
     {
+        console.log("in true")
         document.getElementById('premium-button').style.display = 'none';
 
         const premium_msg = document.getElementById('premium-message');
@@ -107,7 +119,6 @@ function showLeader(leader)
 
 function showExpenses(checkPremiumUser)
 {
-    console.log("loaded window...");
     checkPremiumUser();
     axios.get('http://localhost:4000/expenses/', { headers: {'token' : localStorage.getItem('token')} })
         .then(result=>{
@@ -118,9 +129,7 @@ function showExpenses(checkPremiumUser)
             }
         })
         .catch(error=>{
-            console.log("Error...",error);
-            alert("Please Login to proceed..")
-            window.location.href = 'login.html';
+            console.log(error);
         });
 }
 
@@ -151,6 +160,7 @@ function showExpense(newExpense)
                 .then(result=>{
                     ulList.removeChild(listItem);
                 })
+                .catch(error=>console.log(error));
         }
     div_two.appendChild(delete_btn);
 
@@ -180,10 +190,8 @@ function addExpenseClicked(event)
 
 async function purchaseMembershipClicked(event)
 {
-    console.log("Client pruchase clicked....");
     const response = await axios.get('http://localhost:4000/purchase/purchaseMembership', {
         headers:{'token':localStorage.getItem('token')}});
-    console.log("response from server...", response.data);
     const options = {
         "key":response.data.key_id,
         "order_id": response.data.createdOrder.order_id,
@@ -195,7 +203,7 @@ async function purchaseMembershipClicked(event)
                 status:"SUCCESS"
             }, {headers:{'token':localStorage.getItem('token')}});
 
-            localStorage.setItem('ispremiumuser', success_prom.data.ispremiumuser);
+            localStorage.setItem('token', success_prom.data.token);
             checkPremiumUser();
             alert("Payment Successful.. You are a premium member now!!!")
         }
