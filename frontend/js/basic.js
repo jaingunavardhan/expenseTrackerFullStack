@@ -41,7 +41,6 @@ function loginClicked(event)
         .then(loggedUser=>{
             console.log("AXIOS done...", loggedUser);
             localStorage.setItem('token', loggedUser.data.token);
-            //window.location.href = 'C:/Users/jaing/Sharpener/expenseTrackerComplete/frontend/html/expenses.html';
             window.location.href = "expenses.html";
         })
         .catch(error=>{
@@ -64,7 +63,11 @@ function showExpenses()
                 showExpense(existingExpenses[i]);
             }
         })
-        .catch(error=>console.log(error));
+        .catch(error=>{
+            console.log("Error...",error);
+            alert("Please Login to proceed..")
+            window.location.href = 'login.html';
+        });
 }
 
 function showExpense(newExpense)
@@ -119,4 +122,40 @@ function addExpenseClicked(event)
             showExpense(createdExpense)
         })
         .catch(error=>console.log(error));
+}
+
+async function purchaseMembershipClicked(event)
+{
+    console.log("Client pruchase clicked....");
+    const response = await axios.get('http://localhost:4000/purchase/purchaseMembership', {
+        headers:{'token':localStorage.getItem('token')}});
+    console.log("response from server...", response.data);
+    const options = {
+        "key":response.data.key_id,
+        "order_id": response.data.createdOrder.order_id,
+        "handler": async function(rzp_success){
+            console.log("handler function - success...",rzp_success);
+            await axios.post('http://localhost:4000/purchase/updateTransactionStatus',{
+                order_id : rzp_success.razorpay_order_id,
+                payment_id: rzp_success.razorpay_payment_id,
+                status:"SUCCESS"
+            }, {headers:{'token':localStorage.getItem('token')}});
+
+            alert("Payment Successful.. You are a premium member now!!!")
+        }
+    }
+
+    const rzp = new Razorpay(options);
+    rzp.open();
+
+    rzp.on('payment.failed', async function(rzp_failure){
+        console.log(rzp_failure);
+        await axios.post('http://localhost:4000/purchase/updateTransactionStatus', {
+            order_id: rzp_failure.error.metadata.order_id,
+            payment_id: rzp_failure.error.metadata.payment_id,
+            status: "FAILED"
+        }, {headers:{'token':localStorage.getItem('token')}} );
+        alert("Payment failed, Please try again...");
+    })
+    
 }

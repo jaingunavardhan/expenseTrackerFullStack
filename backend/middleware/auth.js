@@ -7,6 +7,8 @@ const authorization = (request, response, next)=>{
     User.findByPk(id)
         .then(user =>{
             console.log("user...", user);
+            if(user==null)
+                return response.status(401).json("Please Login...");
             request.user = user;
             next();
         })

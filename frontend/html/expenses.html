@@ -8,6 +8,7 @@
 </head>
 <body onload="showExpenses()">
     <div id="signup-div" class="centered">
+        <button type="button" onclick="purchaseMembershipClicked(event)" id="premium-button">Buy Premium</button>
         <form onsubmit="addExpenseClicked(event)" id="signup-form">
             <h2>Add Expense</h2>
             <label for="amount">Amount :</label> <br>
@@ -20,8 +21,8 @@
                     <option value="Movie">Movie</option>
                     <option value="Hotel">Hotel</option>
                     <option value="Travel">Travel</option>
-                    <option value="Rent">Fuel</option>
-                    <option value="Rent">Ration</option>
+                    <option value="Fuel">Fuel</option>
+                    <option value="Ration">Ration</option>
                     <option value="Rent">Rent</option>
                     <option value="Miscellaneous">Miscellaneous</option>
                 </select>            
@@ -34,5 +35,6 @@
     </div>
 </body>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.5.1/axios.min.js"></script>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script src="../js/basic.js"></script>
 </html>
