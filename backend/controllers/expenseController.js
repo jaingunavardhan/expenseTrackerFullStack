@@ -3,7 +3,8 @@ const Expense = require('../models/expense.js');
 
 exports.getExpenses = (request, response, next)=>{
     console.log('getExpenses...');
-    Expense.findAll()
+    //Expense.findAll({where:{userId:request.user.id}}) //You can also fetch like this
+    request.user.getExpenses()
         .then(existingExpenses=>{
             console.log("existingExpenses...", existingExpenses);
             return response.json(existingExpenses);
@@ -13,8 +14,8 @@ exports.getExpenses = (request, response, next)=>{
 
 exports.postExpense = (request, response, next)=>{
     console.log("postExpense...", request.body);
-    Expense.create({
-        amount: request.body.amount,
+    request.user.createExpense({
+        amount: Number(request.body.amount).toFixed(2),
         description: request.body.description,
         category: request.body.category
     })
@@ -25,10 +26,11 @@ exports.postExpense = (request, response, next)=>{
 }
 
 exports.deleteExpense = (request, response, next)=>{
-    console.log("deleteExpense...", request.params.expenseId);
-    Expense.findByPk(request.params.expenseId)
+    console.log("deleteExpense...", request.params);
+    request.user.getExpenses({where:{id:request.params.expenseId}})
         .then(existingExpense=>{
-            existingExpense.destroy()
+            console.log('delete- existingExpense...', existingExpense[0]);
+            existingExpense[0].destroy()
                 .then((deletedExpense)=>{
                     return response.json(deletedExpense);
                 })

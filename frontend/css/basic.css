@@ -65,6 +65,8 @@ li{
     width: 400px;
     display:flex;
     justify-content: space-between;
+    margin-bottom: 15px;
+    list-style: none;
 }
 li h3{
     margin: 0;

@@ -1,6 +1,7 @@
 const sequelize = require('../util/database.js');
 const User = require('../models/user.js');
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 
 exports.getUsers = (request, response, next)=>{
     User.findAll()
@@ -18,7 +19,7 @@ exports.postUser = (request, response, next)=>{
             if(existingUsers.length>0)
             {
                 console.log("User Already Exists...");
-                return response.json('User Already Exists...');
+                return response.status(403).json('User Already Exists...');
             }
             console.log("User not exists... creating user...")
             
@@ -37,6 +38,11 @@ exports.postUser = (request, response, next)=>{
         .catch(error=>console.log(error));
 }
 
+function generateToken(id)
+{
+    return jwt.sign(id, "CandyCaramelo");
+}
+
 exports.postLogin = (request, response, next)=>{
     console.log("postLogin...", request.body);
     User.findAll({where:{email:request.body.email}})
@@ -44,9 +50,10 @@ exports.postLogin = (request, response, next)=>{
             console.log("Existing Users...", existingUsers.length, existingUsers);
             if(existingUsers.length>0)
             {
+                const id = existingUsers[0].id;
                 bcrypt.compare(request.body.password, existingUsers[0].password, (error, result)=>{
                     if(result)
-                        return response.json("Logged In successfully...");
+                        return response.json({token: generateToken(id)});
                     else
                         return response.status(401).json("Invalid Credentials...");
                 })                        
