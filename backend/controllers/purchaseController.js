@@ -30,6 +30,7 @@ exports.updateTransactionStatus = (request, response, next)=>{
         request.user.save()
             .then((updatedUser)=>{
                 console.log("user updated...", updatedUser);
+                return response.json({ispremiumuser:request.user.ispremiumuser})
             })
             .catch(error=>console.log(error));
     }

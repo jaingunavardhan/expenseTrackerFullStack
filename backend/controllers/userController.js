@@ -53,7 +53,7 @@ exports.postLogin = (request, response, next)=>{
                 const id = existingUsers[0].id;
                 bcrypt.compare(request.body.password, existingUsers[0].password, (error, result)=>{
                     if(result)
-                        return response.json({token: generateToken(id)});
+                        return response.json({token: generateToken(id), ispremiumuser: existingUsers[0].ispremiumuser});
                     else
                         return response.status(401).json("Invalid Credentials...");
                 })                        

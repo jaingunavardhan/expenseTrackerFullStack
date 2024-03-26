@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 const userRouter = require('./routes/userRouter.js');
 const expenseRouter = require('./routes/expenseRouter.js');
 const purchaseRouter = require('./routes/purchaseRouter.js')
+const premiumRouter = require('./routes/premiumRouter.js')
 const sequelize = require('./util/database.js');
 const User = require('./models/user.js');
 const Expense = require('./models/expense.js');
@@ -17,12 +18,13 @@ app.use(bodyParser.json({extended:false}))
 app.use('/users', userRouter);
 app.use('/expenses', expenseRouter);
 app.use('/purchase', purchaseRouter);
+app.use('/premium', premiumRouter);
 
+Expense.belongsTo(User, {constraints:true, onDelete:'CASCADE'});
 User.hasMany(Expense);
-Expense.belongsTo(User);
 
+Order.belongsTo(User, {constraints:true, onDelete:'CASCADE'});
 User.hasMany(Order);
-Order.belongsTo(User);
 
 sequelize.sync()
     .then(()=>{
