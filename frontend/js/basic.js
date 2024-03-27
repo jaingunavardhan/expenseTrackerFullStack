@@ -68,7 +68,6 @@ function checkPremiumUser()
     const user = decodeJWT(localStorage.getItem('token'));
     if(user.ispremiumuser == true)
     {
-        console.log("in true")
         document.getElementById('premium-button').style.display = 'none';
 
         const premium_msg = document.getElementById('premium-message');
@@ -130,6 +129,11 @@ function showExpenses(checkPremiumUser)
         })
         .catch(error=>{
             console.log(error);
+            if(error.response.status == 401)
+            {
+                alert("Please Login to fetch data..")
+                window.location.href = 'login.html';                
+            }
         });
 }
 
@@ -183,6 +187,7 @@ function addExpenseClicked(event)
     axios.post('http://localhost:4000/expenses/', newExpense, {headers:{'token':localStorage.getItem('token')}})
         .then(result=>{
             const createdExpense = result.data;
+            console.log(result);
             showExpense(createdExpense)
         })
         .catch(error=>console.log(error));

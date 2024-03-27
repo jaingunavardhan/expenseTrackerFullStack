@@ -12,7 +12,7 @@ const User = sequelize.define('user', {
     email: Sequelize.STRING,
     password: Sequelize.STRING,
     ispremiumuser: Sequelize.BOOLEAN,
-    //total_expenses: Sequelize.DOUBLE
+    total_expenses: Sequelize.DOUBLE
 })
 
 module.exports = User;
