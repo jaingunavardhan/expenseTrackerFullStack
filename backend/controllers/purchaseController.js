@@ -1,6 +1,5 @@
 const Razorpay = require('razorpay');
 const jwt = require('jsonwebtoken');
-const sequelize = require('../util/database');
 
 exports.purchaseMembership = (request, response, next)=>{
     console.log("In purchaseMembership...");
@@ -29,35 +28,31 @@ function generateToken(user)
     );
 }
 
-exports.updateTransactionStatus = async (request, response, next)=>{
+exports.updateTransactionStatus = (request, response, next)=>{
     console.log("Status updated...", request.body);
-    const trans = await sequelize.transaction();
-    try{
-        
-        const existingOrdersList = await request.user.getOrders({where:{order_id:request.body.order_id}});
-        console.log(existingOrdersList);
-        const existingOrder = existingOrdersList[0];
-        existingOrder.status=request.body.status;
-        existingOrder.payment_id=request.body.payment_id;
-        await existingOrder.save({transaction:trans});
-                
-        if(request.body.status == 'SUCCESS')
-        {
-            request.user.ispremiumuser = true;
-            const updatedUser = await request.user.save({transaction:trans});
-            
-            await trans.commit();
-            return response.json({token: generateToken(updatedUser)});
-        }
-
-        await trans.commit();
-        return;
-    }
-    catch(error)
-    {
-        console.log(error);
-        await trans.rollback();
-    }
     
+    if(request.body.status == 'SUCCESS')
+    {
+        request.user.ispremiumuser = true;
+        request.user.save()
+            .then((updatedUser)=>{
+                console.log("user updated...", updatedUser);
+                return response.json({token: generateToken(updatedUser)});
+            })
+            .catch(error=>console.log(error));
+    }
+        
+    request.user.getOrders({where:{order_id:request.body.order_id}})
+        .then(existingOrdersList=>{
+            console.log(existingOrdersList);
+            const existingOrder = existingOrdersList[0];
+            existingOrder.status=request.body.status;
+            existingOrder.payment_id=request.body.payment_id;
+            existingOrder.save()
+                .then(()=>{
+                    return;
+                })
+        })
+        .catch(error=>console.log(error));
 }
     
