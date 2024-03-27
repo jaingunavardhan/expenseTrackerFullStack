@@ -4,7 +4,6 @@ const User = require('../models/user.js');
 const authorization = (request, response, next)=>{
     try
     {
-        console.log("In auth...", request.body, request.headers);
         const user = jwt.verify(request.headers.token, "CandyCaramelo");
         User.findByPk(user.id)
             .then(user =>{
