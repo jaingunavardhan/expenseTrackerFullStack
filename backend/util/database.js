@@ -6,7 +6,7 @@ const sequelize = new Sequelize(
     'guna',
     {
         dialect:'mysql',
-        host: 'localhost'
+        host: 'localhost',
     }
 )
 

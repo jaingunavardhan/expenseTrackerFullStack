@@ -5,6 +5,11 @@ h2{
     margin: 0 0 15px 25px;
     color: red;
 }
+h1{
+    text-align: left;
+    color: red;
+    margin-left: 30px;
+}
 
 form h2{
     margin: 0 0 15px 0;
@@ -58,6 +63,7 @@ form input, select{
 p{
     margin: 20px 0 0 0 ;
     text-align: center;
+    color: blue;
 }
 
 li{
@@ -107,9 +113,13 @@ li div{
     background-color: blueviolet;
 }
 
+#form-div{
+    text-align: center;
+}
+
 #leaderboard-button{
-    display: flex;
-    margin: 10px auto;
+    display: inline-block;
+    margin: 10px 10px;
     padding: 5px;
     text-align: center;
     color: blueviolet;
@@ -118,6 +128,21 @@ li div{
 }
 #leaderboard-button:hover,
 #leaderboard-button:active{
+    color:white;
+    background-color: blueviolet;
+}
+
+#report-button{
+    display: inline-block;
+    margin: 10px 10px;
+    padding: 5px;
+    text-align: center;
+    color: blueviolet;
+    border-color: blueviolet;
+    border-radius: 5px;
+}
+#report-button:hover,
+#report-button:active{
     color:white;
     background-color: blueviolet;
 }
@@ -145,3 +170,21 @@ li div{
 #leaderboard-list li{
     color: blueviolet;
 }
+
+
+#report-download-button{
+    text-align: center;
+    margin: 30px auto 5px auto;
+    display: flex;
+    color: blue;
+    border-color: blue;
+    padding: 4px;
+    border-radius: 5px;
+}
+#report-download-button:hover,
+#report-download-button:active{
+    color: white;
+    background-color: blue;
+}
+
+

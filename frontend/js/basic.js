@@ -1,51 +1,56 @@
-function signupClicked(event)
+async function signupClicked(event)
 {
-    event.preventDefault();
-    const signupDiv = document.getElementById('signup-div');
-    signupDiv.lastElementChild.innerHTML = '';
-
-    const newUser = {
-        username: event.target.username.value,
-        email: event.target.email.value,
-        password: event.target.password.value
+    try{
+        event.preventDefault();
+        const message = document.getElementById('message');
+        message.innerHTML = '';
+    
+        const newUser = {
+            username: event.target.username.value,
+            email: event.target.email.value,
+            password: event.target.password.value
+        }
+        const createdUser = await axios.post('http://localhost:4000/users/signup', newUser)
+        message.innerHTML = createdUser.data.toString();
     }
-    console.log("newUser...", newUser);
-    axios.post('http://localhost:4000/users/signup', newUser)
-        .then(createdUser=>{
-            console.log("AXIOS done...", createdUser.data);
-            signupDiv.lastElementChild.innerHTML = createdUser.data.toString();
-        })
-        .catch(error=>{
-            console.log("AXIOS fail...", error.response.data);
-            signupDiv.lastElementChild.innerHTML = error.response.data.toString();
-            console.log(error);
-        })
+    catch(error)
+    {
+        console.log("errro...",error);
+        if(error.message == 'Network Error')
+            alert("Network Error... Please try again");
+        else
+        {
+            message.innerHTML = error.response.data.toString();
+        }
+    }
 }
 
-
-
-function loginClicked(event)
+async function loginClicked(event)
 {
-    event.preventDefault();
-    localStorage.clear();
-    const loginDiv = document.getElementById('login-div');
-    loginDiv.lastElementChild.innerHTML = '';
-
-    const loginUser = {
-        email: event.target.email.value,
-        password: event.target.password.value
+    try{
+        event.preventDefault();
+        localStorage.clear();
+        const message = document.getElementById('message');
+        message.innerHTML = '';
+    
+        const loginUser = {
+            email: event.target.email.value,
+            password: event.target.password.value
+        }
+        const tokenData = await axios.post('http://localhost:4000/users/login', loginUser)
+        localStorage.setItem('token', tokenData.data.token);
+        window.location.href = "expenses.html";
     }
-    console.log("loginUser...", loginUser);
-    axios.post('http://localhost:4000/users/login', loginUser)
-        .then(tokenData=>{
-            console.log("AXIOS done...", tokenData);
-            localStorage.setItem('token', tokenData.data.token);
-            window.location.href = "expenses.html";
-        })
-        .catch(error=>{
-            console.log("Error page...", error.response);
-            loginDiv.lastElementChild.innerHTML = error.response.data.toString();
-        })
+    catch(error)
+    {
+        console.log("errro...",error);
+        if(error.message == 'Network Error')
+            alert("Network Error... Please try again");
+        else
+        {
+            message.innerHTML = error.response.data.toString();
+        }
+    } 
 }
 
 
@@ -81,60 +86,43 @@ function checkPremiumUser()
         leaderboardButton.onclick = (event)=>{
             showLeaderboard();
         }
+
+        const reports = document.createElement('button');
+        reports.innerHTML = 'Reports';
+        reports.setAttribute('id', 'report-button');
+        reports.onclick = (event)=>{
+            window.location.href = 'reports.html';
+        }
+
         document.getElementById('form-div').appendChild(leaderboardButton);
+        document.getElementById('form-div').appendChild(reports);
     }
 }
 
 
-function showLeaderboard()
+async function showExpenses(checkPremiumUser)
 {
-    console.log("Inside Leaderboard show....")
-    axios.get('http://localhost:4000/premium/getLeaderboard', {headers:{'token':localStorage.getItem('token')}})
-        .then(response=>{
-            const leadersList = response.data;
-            console.log(leadersList)
-            for(var i=0; i<leadersList.length; i++)
-            {
-                showLeader(leadersList[i]);
-            }
-            const h2 = document.createElement('h2');
-            h2.innerHTML = "Leaderboard";
-
-            const ulList = document.getElementById('leaderboard-list');
-            document.getElementById('leaderboard-div').insertBefore(h2, ulList);
-        })
-}
-
-function showLeader(leader)
-{
-    const ulList = document.getElementById('leaderboard-list');
-
-    const listItem = document.createElement('li');
-    listItem.innerHTML = ` <h3>${leader.username} - Total Expenses: ${leader.total_expenses} </h3>`;
-
-    ulList.appendChild(listItem);    
-}
-
-
-function showExpenses(checkPremiumUser)
-{
-    checkPremiumUser();
-    axios.get('http://localhost:4000/expenses/', { headers: {'token' : localStorage.getItem('token')} })
-        .then(result=>{
-            const existingExpenses = result.data;
-            for(var i=0; i<existingExpenses.length; i++)
-            {
-                showExpense(existingExpenses[i]);
-            }
-        })
-        .catch(error=>{
-            console.log(error);
-            if(error.response.status == 401)
-            {
-                alert("Please Login to fetch data..")
-                window.location.href = 'login.html';                
-            }
-        });
+    try{
+        checkPremiumUser();
+        const result = await axios.get('http://localhost:4000/expenses/', { headers: {'token' : localStorage.getItem('token')} })
+        const existingExpenses = result.data;
+        for(var i=0; i<existingExpenses.length; i++)
+        {
+            showExpense(existingExpenses[i]);
+        }
+    }  
+    catch(error)
+    {
+        if(error.message = 'Network Error')
+            alert("Network Error... Please try again");
+        else if(error.response.status == 401)
+        {
+            alert("Please Login to fetch data..")
+            window.location.href = 'login.html';                
+        }
+        else
+            alert("Unable to fetch data, please try again...");      
+    }
 }
 
 function showExpense(newExpense)
@@ -158,13 +146,17 @@ function showExpense(newExpense)
         const delete_btn = document.createElement('button');
         delete_btn.setAttribute('id', 'delete-btn');
         delete_btn.innerHTML = "Delete Expense";
-        delete_btn.onclick = (event)=>{
-            const expenseId = newExpense.id;
-            axios.delete(`http://localhost:4000/expenses/${expenseId}`, { headers:{'token':localStorage.getItem('token')}})
-                .then(result=>{
-                    ulList.removeChild(listItem);
-                })
-                .catch(error=>console.log(error));
+        delete_btn.onclick = async (event)=>{
+            try{
+                const expenseId = newExpense.id;
+                await axios.delete(`http://localhost:4000/expenses/${expenseId}`,
+                                                { headers:{'token':localStorage.getItem('token')}})
+                ulList.removeChild(listItem);
+            }
+            catch(error)
+            {
+                alert("Unable to fetch data, please try again...");                     
+            }
         }
     div_two.appendChild(delete_btn);
 
@@ -174,23 +166,28 @@ function showExpense(newExpense)
     ulList.appendChild(listItem);
 }
 
-function addExpenseClicked(event)
+async function addExpenseClicked(event)
 {
     event.preventDefault();
-
     const newExpense = {
         amount: event.target.amount.value,
         description: event.target.description.value,
         category: event.target.category.value
     }
 
-    axios.post('http://localhost:4000/expenses/', newExpense, {headers:{'token':localStorage.getItem('token')}})
-        .then(result=>{
-            const createdExpense = result.data;
-            console.log(result);
-            showExpense(createdExpense)
-        })
-        .catch(error=>console.log(error));
+    try{
+        const result = await axios.post(
+            'http://localhost:4000/expenses/',
+            newExpense,
+            { headers:{'token':localStorage.getItem('token')} }
+        )
+        const createdExpense = result.data;
+        showExpense(createdExpense)
+    }
+    catch(error)
+    {
+        alert("Something went wrong... Please try again");
+    }
 }
 
 async function purchaseMembershipClicked(event)
@@ -227,3 +224,224 @@ async function purchaseMembershipClicked(event)
         alert("Payment failed, Please try again...");
     })   
 }
+
+
+
+async function forgotSubmitted(event)
+{
+    event.preventDefault();
+    const errorMsg = document.getElementById('error-msg');
+    errorMsg.innerHTML = '';
+    try{
+        const result = await axios.post('http://localhost:4000/password/forgotpassword', {email:event.target.email.value})
+        errorMsg.innerHTML = result.data.toString();
+    }
+    catch(error)
+    {
+        console.log("errro...",error);
+        if(error.message == 'Network Error')
+            alert("Network Error... Please try again");
+        else
+            errorMsg.innerHTML = error.response.data.toString();
+    } 
+}
+
+
+
+//******************************************************************** */
+//PREMIUM USER FUNCTIONALITY
+/********************************************************************* */
+
+async function showLeaderboard()
+{
+    console.log("Inside Leaderboard show....")
+    const ulList = document.getElementById('leaderboard-list');
+    ulList.innerHTML='';
+    const h2 = document.getElementById('leaderboard-h2');
+    h2.innerHTML = '';
+    try{
+        const response = await axios.get('http://localhost:4000/premium/getLeaderboard',
+                                        {headers:{'token':localStorage.getItem('token')}});
+        const leadersList = response.data;
+        for(var i=0; i<leadersList.length; i++)
+        {
+            showLeader(leadersList[i]);
+        }
+        h2.innerHTML = "Leaderboard";
+    
+        document.getElementById('leaderboard-div').insertBefore(h2, ulList);
+    }
+    catch(error)
+    {
+        alert("Something went wrong... Please try again");
+    }  
+}
+
+function showLeader(leader)
+{
+    const ulList = document.getElementById('leaderboard-list');
+
+    const listItem = document.createElement('li');
+    listItem.innerHTML = ` <h3>${leader.username} - Total Expenses: ${leader.total_expenses} </h3>`;
+
+    ulList.appendChild(listItem);    
+}
+
+
+async function showAllLinks()
+{
+    const user = decodeJWT(localStorage.getItem('token'));
+    if(user.ispremiumuser == true)
+    {
+        try{
+            const result = await axios.get('http://localhost:4000/download/old',
+                                        {headers:{'token':localStorage.getItem('token')}})
+            
+            const links = result.data;
+            for(var i=0; i<links.length; i++)
+            {
+                showLink(links[i].url);
+            }
+        }
+        catch(error)
+        {
+            if(error.response.status == 401)
+            {
+                alert("Please Login to fetch data..")
+                window.location.href = 'login.html';                
+            }
+            else if(error.message = 'Network Error')
+                alert("Network Error... Please try again"); 
+            else
+                alert("Unable to fetch data, please try again...");
+        }
+    }
+    else
+    {
+        alert("Please buy premium to avail this feature...");
+    }
+}
+
+function showLink(url)
+{
+    const ulList = document.getElementById('report-links-list');
+    
+    const listItem = document.createElement('li');
+        const a = document.createElement('a');
+        a.setAttribute('href', `${url}`);
+        a.innerHTML = `${url}`
+    listItem.appendChild(a);
+
+    ulList.appendChild(listItem);
+}
+
+async function getLink()
+{
+    const user = decodeJWT(localStorage.getItem('token'));
+    if(user.ispremiumuser == true)
+    {
+        try{
+            console.log("In getlink.....");
+            const result = await axios.get('http://localhost:4000/download/',
+                                            {headers:{'token':localStorage.getItem('token')}})
+            console.log(result.data);
+        }
+        catch(error)
+        {
+            if(error.response.status == 401)
+            {
+                alert("Please Login to fetch data..")
+                window.location.href = 'login.html';                
+            }
+            else if(error.message = 'Network Error')
+                alert("Network Error... Please try again"); 
+            else
+                alert("Unable to fetch data, please try again...");
+        }
+    }
+    else
+    {
+        alert("Please buy premium to avail this feature...");
+    }
+}
+
+
+
+
+
+
+// function generateReport()
+// {
+//     console.log("In generate report...");
+//     const date = new Date();
+//     //console.log(".....", date.toLocaleString())
+//     axios.get('http://localhost:4000/expenses/', {headers:{'token':localStorage.getItem('token')}})
+//         .then(response=>{
+//             const expensesList = response.data.existingExpenses;
+//             const total_expenses = response.data.total_expenses;
+            
+//             for(var i=0; i<expensesList.length; i++)
+//             {
+//                 const entry =  {
+//                     category : expensesList[i].category,
+//                     amount: expensesList[i].amount,
+//                     description: expensesList[i].description,
+//                     date : expensesList[i].date
+//                 };
+//                 addRow(entry);
+//             }
+//             addTotalRow('Total Expenses', total_expenses);
+//         })
+//         .catch(error=>{
+//             console.log(error);
+//             if(error.response.status==401)
+//             {
+//                 alert("Please Login to fetch data..")
+//                 window.location.href = 'login.html';                
+//             }
+//         });
+// }
+
+// function addRow(entry)
+// {
+//     const tbody = document.getElementById('report-body');
+//         const tr = document.createElement('tr');
+//             const td1 = document.createElement('td');
+//             td1.innerHTML = `${ entry.date }`;
+//             //toLocaleString('default', {month:'long'})
+
+//             const td2 = document.createElement('td');
+//             td2.innerHTML = `${entry.category}`;
+
+//             const td3 = document.createElement('td');
+//             td3.innerHTML = `${entry.description}`;
+
+//             const td4 = document.createElement('td');
+//             td4.innerHTML = `${entry.amount}`;
+        
+//         tr.appendChild(td1);
+//         tr.appendChild(td2);
+//         tr.appendChild(td3);
+//         tr.appendChild(td4);
+//     tbody.appendChild(tr);
+
+// }
+
+// function addTotalRow(text, amount)
+// {
+//     const tbody = document.getElementById('report-body');
+//         const tr = document.createElement('tr');
+//             const td1 = document.createElement('td');
+//             td1.setAttribute('colspan', '3');
+//             td1.style.textAlign = 'right';
+//             td1.style.backgroundColor = 'antiquewhite';
+//             td1.innerHTML = text;
+
+//             const td2 = document.createElement('td');
+//             td2.style.backgroundColor = 'antiquewhite';
+//             td2.innerHTML = `${amount}`;
+//         tr.appendChild(td1);
+//         tr.appendChild(td2);
+//         tr.style.fontWeight = 'bold';
+//     tbody.appendChild(tr);
+// }

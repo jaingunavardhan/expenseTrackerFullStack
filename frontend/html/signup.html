@@ -6,7 +6,7 @@
     <title>Sign Up</title>
     <link rel="stylesheet" href="../css/basic.css">
 </head>
-<body>
+<body onload="localStorage.clear()">
     <div id="signup-div" class="centered">
         <form onsubmit="signupClicked(event)" id="signup-form">
             <h2>Sign Up</h2>
@@ -19,7 +19,7 @@
             <button type="submit" id="form-button">Sign Up</button>
             <p>Existing user? <a href="login.html">Login Here</a></p>
         </form>
-        <p style="color: red;"></p>
+        <p style="color: red;" id="message"></p>
     </div>
 </body>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.5.1/axios.min.js"></script>
